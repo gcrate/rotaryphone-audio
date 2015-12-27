@@ -1,29 +1,37 @@
 import RPi.GPIO as GPIO
 import time
+from pygame import mixer
 GPIO.setmode(GPIO.BCM)
 
 HOOK = 22
 DIAL = 27
-TIMEOUT_PERIOD = 4
+TIMEOUT_PERIOD = 3
 
 GPIO.setup(HOOK, GPIO.IN)
-
-while true:
+GPIO.setup(DIAL, GPIO.IN)
+mixer.init()
+while 1:
   dialCount=0
-  dialDialing=false
-  dialState=
+  dialDialing=0
+  dialState=GPIO.input(DIAL)
   dialTime=time.time()
-  playing=false
+  playing=0
   while not GPIO.input(HOOK):
+    
     if not playing:
       newState = GPIO.input(DIAL)
       if newState != dialState:
-	++dialCount
-	dialCount=0
+	print "state change"
+	dialCount = dialCount + 1
 	dialTime=time.time()
 	dialState = newState
-      if dialDialing and ((dialTime + TIMEOUT_PERIOD) > time.time()):
-	print "you dialed " + (dialCount - 3)
-	playing=true
+	dialDialing=1
+      if dialDialing and ((dialTime + TIMEOUT_PERIOD) < time.time()):
+	dialed = ((dialCount / 2) -1)
+	print "you dialed %d" % dialed
+	playing=1
+	mixer.music.load("%d.mp3" % (dialed))
+	mixer.music.play()
+  mixer.music.stop() 
 
   
