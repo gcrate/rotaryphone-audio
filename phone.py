@@ -30,8 +30,11 @@ while 1:
 	dialed = ((dialCount / 2) -1)
 	print "you dialed %d" % dialed
 	playing=1
-	mixer.music.load("%d.mp3" % (dialed))
-	mixer.music.play()
+	try:
+	  mixer.music.load("%d.mp3" % (dialed))
+	  mixer.music.play()
+	except:
+	  print "incorrect number"
   mixer.music.stop() 
 
   
